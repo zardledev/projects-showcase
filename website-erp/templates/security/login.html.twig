@@ -1,0 +1,25 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Connexion{% endblock %}
+
+{% block body %}
+<main class="page">
+    <h1>Connexion</h1>
+
+    {% if error %}
+        <p>{{ error.messageKey|trans(error.messageData, 'security') }}</p>
+    {% endif %}
+
+    <form method="post">
+        <div>
+            <label for="username">Email</label>
+            <input type="text" id="username" name="_username" value="{{ last_username }}" autocomplete="email" required>
+        </div>
+        <div>
+            <label for="password">Mot de passe</label>
+            <input type="password" id="password" name="_password" autocomplete="current-password" required>
+        </div>
+        <button type="submit">Se connecter</button>
+    </form>
+</main>
+{% endblock %}

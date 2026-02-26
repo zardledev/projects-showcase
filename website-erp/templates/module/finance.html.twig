@@ -1,0 +1,26 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Module Finance{% endblock %}
+
+{% block body %}
+<main class="page module-page">
+    <section class="module-hero">
+        <p class="module-hero__kicker">Module</p>
+        <h1>Finance</h1>
+        <p class="module-hero__subtitle">Facturation, comptabilite et suivi des paiements.</p>
+    </section>
+
+    <section class="module-card">
+        <h2>Etat du module</h2>
+        {% if module %}
+            <div class="module-chip">
+                <span>{{ module.name }}</span>
+                <span>v{{ module.version }}</span>
+                <span>{{ module.status }}</span>
+            </div>
+        {% else %}
+            <p>Module non charge.</p>
+        {% endif %}
+    </section>
+</main>
+{% endblock %}

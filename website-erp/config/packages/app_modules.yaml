@@ -1,0 +1,20 @@
+parameters:
+    app.modules:
+        Test:
+            enabled: true
+            roles: [ROLE_ADMIN]
+            dependencies: {  }
+        Stock:
+            enabled: true
+            roles: {  }
+            dependencies: {  }
+        Finance:
+            enabled: true
+            roles: {  }
+            dependencies: {  }
+        CRM:
+            enabled: true
+            roles: {  }
+            dependencies: {  }
+    app.modules.enabled: {  }
+    app.modules.disabled: {  }

@@ -1,0 +1,44 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Admin - Modules{% endblock %}
+
+{% block body %}
+<main class="page">
+    <section class="grid">
+        <article class="card">
+            <h2>Administration des modules</h2>
+            <div class="modules">
+                {% for module in modules %}
+                    <div class="module">
+                        <div class="module__name">{{ module.name }}</div>
+                        <div class="module__meta">v{{ module.version }} - {{ module.status }}</div>
+                        <div class="module__desc">{{ module.description }}</div>
+                        <div class="module__meta">Roles: {{ module.roles is empty ? 'public' : module.roles|join(', ') }}</div>
+                        <div class="module__meta">Dependencies: {{ module.dependencies is empty ? 'none' : module.dependencies|join(', ') }}</div>
+                        <form method="post" action="{{ path('admin_module_toggle') }}">
+                            <input type="hidden" name="_token" value="{{ csrf_token('module_toggle') }}">
+                            <input type="hidden" name="name" value="{{ module.name }}">
+                            <input type="hidden" name="enabled" value="{{ module.enabled ? 0 : 1 }}">
+                            <button class="btn" type="submit">
+                                {{ module.enabled ? 'Desactiver' : 'Activer' }}
+                            </button>
+                        </form>
+                    </div>
+                {% else %}
+                    <p>Aucun module enregistre.</p>
+                {% endfor %}
+            </div>
+        </article>
+        <article class="card">
+            <h2>Roles existants (BDD)</h2>
+            <div class="pill-list">
+                {% for role in roles %}
+                    <span class="pill">{{ role }}</span>
+                {% else %}
+                    <span class="pill">Aucun role</span>
+                {% endfor %}
+            </div>
+        </article>
+    </section>
+</main>
+{% endblock %}

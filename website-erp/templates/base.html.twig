@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>{% block title %}Welcome!{% endblock %}</title>
+        <link rel="icon" href="">
+        {% block stylesheets %}
+        {% endblock %}
+
+        {% block javascripts %}
+            {% block importmap %}{{ importmap('app') }}{% endblock %}
+        {% endblock %}
+    </head>
+    <body>
+        <header class="topbar">
+            <div class="topbar__brand">
+                <span class="brand__dot"></span>
+                <span>ERP Core</span>
+            </div>
+            <nav class="topbar__nav">
+                <a href="{{ path('home') }}">Core</a>
+                {% for module in nav_modules %}
+                    <a href="{{ path(module.route) }}">{{ module.name }}</a>
+                {% endfor %}
+                {% if is_admin %}
+                    <details class="admin-menu">
+                        <summary>Admin</summary>
+                        <div class="admin-menu__panel">
+                            <div class="admin-menu__section">
+                                <div class="admin-menu__title">Roles en BDD</div>
+                                <div class="pill-list">
+                                    {% for role in roles_in_db %}
+                                        <span class="pill">{{ role }}</span>
+                                    {% else %}
+                                        <span class="pill">Aucun role</span>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                            <div class="admin-menu__section">
+                                <div class="admin-menu__title">Modules</div>
+                                <div class="admin-menu__list">
+                                    {% for module in all_modules %}
+                                        <form method="post" action="{{ path('admin_module_toggle') }}">
+                                            <input type="hidden" name="_token" value="{{ csrf_token('module_toggle') }}">
+                                            <input type="hidden" name="name" value="{{ module.name }}">
+                                            <input type="hidden" name="enabled" value="{{ module.enabled ? 0 : 1 }}">
+                                            <button class="btn btn--small" type="submit">
+                                                {{ module.enabled ? 'Desactiver' : 'Activer' }} {{ module.name }}
+                                            </button>
+                                        </form>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                            <div class="admin-menu__section">
+                                <a class="btn btn--ghost" href="{{ path('admin_modules') }}">Page admin modules</a>
+                            </div>
+                        </div>
+                    </details>
+                {% endif %}
+                {% if app.user %}
+                    <span>{{ app.user.userIdentifier }}</span>
+                    <a href="{{ path('app_logout') }}">Logout</a>
+                {% else %}
+                    <a href="{{ path('app_login') }}">Login</a>
+                {% endif %}
+            </nav>
+        </header>
+        {% block body %}{% endblock %}
+    </body>
+</html>
