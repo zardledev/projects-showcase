@@ -2,7 +2,7 @@ parameters:
     app.modules:
         Test:
             enabled: true
-            roles: [ROLE_ADMIN]
+            roles: {  }
             dependencies: {  }
         Stock:
             enabled: true
