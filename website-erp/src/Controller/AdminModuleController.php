@@ -12,6 +12,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Csrf\CsrfToken;
 use Symfony\Component\Security\Csrf\CsrfTokenManagerInterface;
+use Symfony\Component\Process\Process;
 
 class AdminModuleController extends AbstractController
 {
@@ -46,7 +47,10 @@ class AdminModuleController extends AbstractController
         }
 
         $config->setEnabled($name, $enabled);
-        $this->addFlash('success', $enabled ? 'Module activé.' : 'Module désactivé.');
+        if (!$this->refreshCache()) {
+            $this->addFlash('warning', 'Cache non regeneree. Le changement peut ne pas etre visible immediatement.');
+        }
+        $this->addFlash('success', $enabled ? 'Module active.' : 'Module desactive.');
 
         return $this->redirectToRoute('admin_modules');
     }
@@ -68,4 +72,28 @@ class AdminModuleController extends AbstractController
 
         return $roles;
     }
+
+    private function refreshCache(): bool
+    {
+        $projectDir = (string) $this->getParameter('kernel.project_dir');
+        $console = $projectDir . DIRECTORY_SEPARATOR . 'bin' . DIRECTORY_SEPARATOR . 'console';
+        if (!is_file($console)) {
+            return false;
+        }
+
+        $clear = new Process([PHP_BINARY, $console, 'cache:clear', '--no-warmup', '--no-interaction']);
+        $clear->setTimeout(300);
+        $clear->run();
+        if (!$clear->isSuccessful()) {
+            return false;
+        }
+
+        $warmup = new Process([PHP_BINARY, $console, 'cache:warmup', '--no-interaction']);
+        $warmup->setTimeout(300);
+        $warmup->run();
+        return $warmup->isSuccessful();
+    }
 }
+
+
+

@@ -30,18 +30,6 @@
                     <p>Aucun module enregistre.</p>
                 {% endfor %}
             </div>
-            {% if is_admin %}
-                <div class="card admin-roles">
-                    <h3>Roles existants (BDD)</h3>
-                    <div class="pill-list">
-                        {% for role in roles_in_db %}
-                            <span class="pill">{{ role }}</span>
-                        {% else %}
-                            <span class="pill">Aucun role</span>
-                        {% endfor %}
-                    </div>
-                </div>
-            {% endif %}
         </article>
     </section>
 </main>

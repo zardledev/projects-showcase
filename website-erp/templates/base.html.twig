@@ -15,10 +15,10 @@
         <header class="topbar">
             <div class="topbar__brand">
                 <span class="brand__dot"></span>
-                <span>ERP Core</span>
+                <span>ERP Julian & Cie</span>
             </div>
             <nav class="topbar__nav">
-                <a href="{{ path('home') }}">Core</a>
+                <a href="{{ path('home') }}">Manage Modules</a>
                 {% for module in nav_modules %}
                     <a href="{{ path(module.route) }}">{{ module.name }}</a>
                 {% endfor %}
@@ -26,16 +26,6 @@
                     <details class="admin-menu">
                         <summary>Admin</summary>
                         <div class="admin-menu__panel">
-                            <div class="admin-menu__section">
-                                <div class="admin-menu__title">Roles en BDD</div>
-                                <div class="pill-list">
-                                    {% for role in roles_in_db %}
-                                        <span class="pill">{{ role }}</span>
-                                    {% else %}
-                                        <span class="pill">Aucun role</span>
-                                    {% endfor %}
-                                </div>
-                            </div>
                             <div class="admin-menu__section">
                                 <div class="admin-menu__title">Modules</div>
                                 <div class="admin-menu__list">

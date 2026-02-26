@@ -1,19 +1,7 @@
 parameters:
     app.modules:
         Test:
-            enabled: true
-            roles: {  }
-            dependencies: {  }
-        Stock:
-            enabled: true
-            roles: {  }
-            dependencies: {  }
-        Finance:
-            enabled: true
-            roles: {  }
-            dependencies: {  }
-        CRM:
-            enabled: true
+            enabled: false
             roles: {  }
             dependencies: {  }
     app.modules.enabled: {  }

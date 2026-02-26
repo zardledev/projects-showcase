@@ -47,3 +47,4 @@ Commande avec comme préfixe  ```php binconsole ```
   1. Bordure noire sur chaque module dans la page d’accueil.
   2. Boutons activerdésactiver.
   3. Pills pour les rôles.
+

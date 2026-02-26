@@ -9,6 +9,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Filesystem\Filesystem;
+use Symfony\Component\Process\Process;
 
 #[AsCommand(
     name: 'erp:module:add',
@@ -62,6 +63,7 @@ class ModuleAddCommand extends Command
         $filesystem->dumpFile($moduleDir . '/Controller/' . $className . 'Controller.php', $controllerClass);
         $filesystem->dumpFile('templates/module/' . $slug . '.html.twig', $template);
         $this->updateModuleConfig($className, $roles, $dependencies);
+        $this->refreshCache($output);
 
         $output->writeln('<info>Module created:</info> ' . $className);
         $output->writeln('Route: /modules/' . $slug);
@@ -220,8 +222,12 @@ TWIG;
         $rolesYaml = $this->yamlInlineList($roles);
         $dependenciesYaml = $this->yamlInlineList($dependencies);
         $block = "        {$className}:\n            enabled: true\n            roles: {$rolesYaml}\n            dependencies: {$dependenciesYaml}\n";
-        if (str_contains($contents, "app.modules:\n")) {
+        if (preg_match('/app\.modules:\s*\{\s*\}/', $contents) === 1) {
+            $contents = preg_replace('/app\.modules:\s*\{\s*\}/', "app.modules:\n{$block}", $contents, 1);
+        } elseif (str_contains($contents, "app.modules:\n")) {
             $contents = preg_replace('/app\.modules:\n/', "app.modules:\n{$block}", $contents, 1);
+        } elseif (str_contains($contents, "parameters:\n")) {
+            $contents = preg_replace('/parameters:\n/', "parameters:\n    app.modules:\n{$block}", $contents, 1);
         } else {
             $contents .= "\nparameters:\n    app.modules:\n{$block}";
         }
@@ -241,5 +247,30 @@ TWIG;
         );
 
         return '[' . implode(', ', $escaped) . ']';
+    }
+
+    private function refreshCache(OutputInterface $output): void
+    {
+        $projectDir = dirname(__DIR__, 2);
+        $console = $projectDir . DIRECTORY_SEPARATOR . 'bin' . DIRECTORY_SEPARATOR . 'console';
+        if (!is_file($console)) {
+            $output->writeln('<comment>cache:clear skipped (bin/console not found).</comment>');
+            return;
+        }
+
+        $clear = new Process([PHP_BINARY, $console, 'cache:clear', '--no-warmup', '--no-interaction']);
+        $clear->setTimeout(300);
+        $clear->run();
+        if (!$clear->isSuccessful()) {
+            $output->writeln('<comment>cache:clear failed; module may not be visible until cache is cleared.</comment>');
+            return;
+        }
+
+        $warmup = new Process([PHP_BINARY, $console, 'cache:warmup', '--no-interaction']);
+        $warmup->setTimeout(300);
+        $warmup->run();
+        if (!$warmup->isSuccessful()) {
+            $output->writeln('<comment>cache:warmup failed; module may not be visible until cache is warmed.</comment>');
+        }
     }
 }

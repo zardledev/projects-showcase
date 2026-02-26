@@ -8,8 +8,9 @@ use App\Core\Event\EventBus;
 use App\Core\Security\AuthService;
 use App\Core\Security\PermissionService;
 use Symfony\Component\DependencyInjection\Attribute\AutowireIterator;
+use Symfony\Contracts\Service\ResetInterface;
 
-class ModuleLoader
+class ModuleLoader implements ResetInterface
 {
     /**
      * @var ModuleInterface[]
@@ -69,6 +70,12 @@ class ModuleLoader
         }
 
         $this->booted = true;
+    }
+
+    public function reset(): void
+    {
+        $this->booted = false;
+        $this->statuses = [];
     }
 
     /**
@@ -132,6 +139,7 @@ class ModuleLoader
                 $enabledFromConfig[] = (string) $name;
             }
         }
+        $hasConfig = count($moduleConfig) > 0;
 
         $enabled = $this->configuration->get('app.modules.enabled', []);
         $disabled = $this->configuration->get('app.modules.disabled', []);
@@ -143,11 +151,11 @@ class ModuleLoader
             $disabled = [];
         }
 
-        if (count($enabled) === 0 && count($enabledFromConfig) > 0) {
+        if (count($enabled) === 0 && $hasConfig) {
             $enabled = $enabledFromConfig;
         }
 
-        if (count($enabled) === 0) {
+        if (count($enabled) === 0 && !$hasConfig) {
             foreach ($this->modules as $module) {
                 if ($module->isEnabledByDefault()) {
                     $enabled[] = $module->getName();

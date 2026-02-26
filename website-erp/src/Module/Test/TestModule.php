@@ -14,7 +14,7 @@ class TestModule implements ModuleInterface
 
     public function getVersion(): string
     {
-        return '1.0.0';
+        return '0.1.0';
     }
 
     public function getDescription(): string
