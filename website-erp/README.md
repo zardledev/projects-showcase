@@ -27,7 +27,7 @@
   3. Dépendances (ou “none”).
 
 ### Commandes CLI
-Commande avec comme préfixe  ```php binconsole ```
+Commande avec comme préfixe  ```php bin/console ```
 
   ```erpmoduleadd name [version] [--role=ROLE_X][--dependency=Module]```
 
